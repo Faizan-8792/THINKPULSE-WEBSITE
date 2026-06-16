@@ -481,6 +481,24 @@ html.loading,body.loading{overflow:hidden}
   animation:loaderOut .6s ease 2.5s forwards}
 @keyframes loaderOut{to{opacity:0;visibility:hidden}}
 
+.ldr-aura{position:absolute;inset:0;overflow:hidden;filter:blur(64px);opacity:.55;animation:auraFade .5s 1.9s forwards}
+.ldr-aura span{position:absolute;width:60vw;height:60vw;border-radius:50%;animation:auraDrift 7s ease-in-out infinite}
+.ldr-aura span:nth-child(1){background:radial-gradient(circle,#4f46e5,transparent 62%);left:-14vw;top:-12vw}
+.ldr-aura span:nth-child(2){background:radial-gradient(circle,#22d3ee,transparent 62%);right:-14vw;bottom:-12vw;animation-delay:-3.5s}
+@keyframes auraDrift{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(5vw,4vw) scale(1.12)}}
+@keyframes auraFade{to{opacity:0}}
+
+.ldr-progress{position:absolute;width:216px;height:216px;border-radius:50%;z-index:1;
+  background:conic-gradient(#22d3ee calc(var(--p,0)*360deg),rgba(255,255,255,.07) 0);
+  -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#000 calc(100% - 3px));
+  mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#000 calc(100% - 3px));
+  filter:drop-shadow(0 0 12px rgba(34,211,238,.65));animation:progOut .45s 1.92s forwards}
+@keyframes progOut{to{opacity:0;transform:scale(1.35)}}
+.gyro-ring::after{content:"";position:absolute;top:-5px;left:50%;width:9px;height:9px;margin-left:-4.5px;border-radius:50%;
+  background:#fff;box-shadow:0 0 14px #22d3ee,0 0 6px #fff}
+.gr2::after{box-shadow:0 0 14px #7c83ff,0 0 6px #fff}
+.gr3::after{box-shadow:0 0 14px #2dd4bf,0 0 6px #fff}
+
 .ldr-grid{position:absolute;inset:-2px;opacity:.22;
   background-image:linear-gradient(rgba(124,131,255,.22) 1px,transparent 1px),linear-gradient(90deg,rgba(124,131,255,.22) 1px,transparent 1px);
   background-size:46px 46px;-webkit-mask:radial-gradient(circle at 50% 50%,#000,transparent 70%);mask:radial-gradient(circle at 50% 50%,#000,transparent 70%);

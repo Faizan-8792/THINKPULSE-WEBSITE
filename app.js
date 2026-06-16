@@ -30,7 +30,9 @@
       var t0 = performance.now(), dur = 1850;
       (function tick(now) {
         var p = Math.min(((now || t0) - t0) / dur, 1);
-        pct.textContent = Math.round((1 - Math.pow(1 - p, 2)) * 100);
+        var eased = 1 - Math.pow(1 - p, 2);
+        pct.textContent = Math.round(eased * 100);
+        loader.style.setProperty('--p', eased.toFixed(3));
         if (p < 1) requestAnimationFrame(tick);
       })(t0);
     }
@@ -99,36 +101,25 @@
   });
   document.querySelectorAll('.steps .step').forEach(function (el) { el.classList.add('from-up'); });
 
-  /* ---------- Scroll reveal ---------- */
+  /* ---------- Scroll reveal (re-triggers on scroll up AND down) ---------- */
   var revealEls = document.querySelectorAll('.reveal,[data-reveal]');
   if ('IntersectionObserver' in window) {
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (en) {
         if (en.isIntersecting) {
           var d = en.target.getAttribute('data-delay');
-          if (d) en.target.style.transitionDelay = d + 'ms';
+          en.target.style.transitionDelay = (d ? d : 0) + 'ms';
           en.target.classList.add('in');
-          io.unobserve(en.target);
+        } else {
+          en.target.style.transitionDelay = '0ms';
+          en.target.classList.remove('in');
         }
       });
-    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    }, { threshold: 0.16, rootMargin: '0px 0px -12% 0px' });
     revealEls.forEach(function (el) { io.observe(el); });
   } else {
     revealEls.forEach(function (el) { el.classList.add('in'); });
   }
-  // Fallback: guarantee anything at/above the viewport is revealed, even after
-  // an instant anchor jump that an observer might skip.
-  function revealInView() {
-    var vh = window.innerHeight;
-    revealEls.forEach(function (el) {
-      if (el.classList.contains('in')) return;
-      var r = el.getBoundingClientRect();
-      if (r.top < vh * 0.92) el.classList.add('in');
-    });
-  }
-  window.addEventListener('scroll', revealInView, { passive: true });
-  window.addEventListener('hashchange', function () { setTimeout(revealInView, 60); });
-  setTimeout(revealInView, 200);
 
   /* ---------- Nav scrolled + scroll progress + parallax + scroll-cue ---------- */
   var nav = document.getElementById('nav');
