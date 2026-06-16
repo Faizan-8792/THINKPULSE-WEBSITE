@@ -3,35 +3,41 @@
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var isTouch = window.matchMedia('(max-width:900px)').matches;
 
-  /* ---------- Launch loader ---------- */
+  /* ---------- Launch loader (every refresh) ---------- */
   (function () {
     var loader = document.getElementById('loader');
     if (!loader) return;
-    var seen = false;
-    try { seen = sessionStorage.getItem('tp-loaded') === '1'; } catch (e) {}
-    if (reduce || seen) { loader.classList.add('skip'); return; }
+    if (reduce) { loader.style.display = 'none'; return; }
     document.documentElement.classList.add('loading');
     var box = document.getElementById('ldrParticles');
     if (box) {
       var colors = ['#7c83ff', '#22d3ee', '#2dd4bf', '#ffffff'];
-      var n = window.innerWidth < 700 ? 18 : 30;
-      var reach = Math.max(window.innerWidth, window.innerHeight) * 0.55;
+      var n = window.innerWidth < 700 ? 20 : 34;
+      var reach = Math.max(window.innerWidth, window.innerHeight) * 0.6;
       for (var i = 0; i < n; i++) {
         var dot = document.createElement('i');
         var ang = (Math.PI * 2 * i) / n + Math.random() * 0.3;
-        var dist = 220 + Math.random() * reach;
+        var dist = 240 + Math.random() * reach;
         dot.style.setProperty('--x', (Math.cos(ang) * dist).toFixed(0) + 'px');
         dot.style.setProperty('--y', (Math.sin(ang) * dist).toFixed(0) + 'px');
         dot.style.color = colors[i % colors.length];
-        dot.style.animationDelay = (1.4 + Math.random() * 0.12).toFixed(2) + 's';
+        dot.style.animationDelay = (1.95 + Math.random() * 0.12).toFixed(2) + 's';
         box.appendChild(dot);
       }
+    }
+    var pct = document.getElementById('ldrPct');
+    if (pct) {
+      var t0 = performance.now(), dur = 1850;
+      (function tick(now) {
+        var p = Math.min(((now || t0) - t0) / dur, 1);
+        pct.textContent = Math.round((1 - Math.pow(1 - p, 2)) * 100);
+        if (p < 1) requestAnimationFrame(tick);
+      })(t0);
     }
     setTimeout(function () {
       document.documentElement.classList.remove('loading');
       if (loader.parentNode) loader.parentNode.removeChild(loader);
-      try { sessionStorage.setItem('tp-loaded', '1'); } catch (e) {}
-    }, 2500);
+    }, 3050);
   })();
 
   /* ---------- Year ---------- */

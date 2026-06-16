@@ -13,21 +13,25 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=6" />
+  <link rel="stylesheet" href="styles.css?v=7" />
 </head>
 <body>
   <!-- Full-screen launch loader -->
   <div id="loader" class="loader" role="status" aria-label="Loading ThinkPulse">
     <div class="ldr-grid" aria-hidden="true"></div>
     <div class="ldr-core">
-      <span class="ldr-ring"></span>
-      <span class="ldr-ring ldr-ring2"></span>
+      <div class="ldr-gyro" aria-hidden="true">
+        <span class="gyro-ring gr1"></span>
+        <span class="gyro-ring gr2"></span>
+        <span class="gyro-ring gr3"></span>
+      </div>
       <img src="assets/logo.png" class="ldr-logo" alt="" />
       <span class="ldr-flash" aria-hidden="true"></span>
     </div>
     <div class="ldr-shock" aria-hidden="true"></div>
     <div class="ldr-shock ldr-shock2" aria-hidden="true"></div>
     <div class="ldr-particles" id="ldrParticles" aria-hidden="true"></div>
+    <div class="ldr-pct" id="ldrPct">0</div>
     <div class="ldr-label">INITIALIZING&nbsp;THINKPULSE</div>
   </div>
 
@@ -468,8 +472,8 @@
     </div>
   </footer>
 
-  <script type="module" src="scene.js?v=6"></script>
-  <script type="module" src="river.js?v=6"></script>
-  <script src="app.js?v=6"></script>
+  <script type="module" src="scene.js?v=7"></script>
+  <script type="module" src="river.js?v=7"></script>
+  <script src="app.js?v=7"></script>
 </body>
 </html>

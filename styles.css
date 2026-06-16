@@ -474,56 +474,63 @@ kbd{box-shadow:0 1px 0 var(--border-strong),inset 0 1px 0 rgba(255,255,255,.4)}
 @media (max-width:520px){.arch-providers{grid-template-columns:repeat(2,1fr)}}
 
 
-/* ===== Launch loader (charge -> blast -> reveal) ===== */
+/* ===== Launch loader: 3D gyroscope -> charge -> blast -> reveal ===== */
 html.loading,body.loading{overflow:hidden}
-.loader{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;overflow:hidden;
+.loader{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;overflow:hidden;perspective:1000px;
   background:radial-gradient(circle at 50% 50%,#0e1430 0%,#070a18 55%,#04060f 100%);
-  animation:loaderOut .6s ease 1.95s forwards}
+  animation:loaderOut .6s ease 2.5s forwards}
 @keyframes loaderOut{to{opacity:0;visibility:hidden}}
-.loader.skip{display:none}
 
-.ldr-grid{position:absolute;inset:-2px;opacity:.25;
+.ldr-grid{position:absolute;inset:-2px;opacity:.22;
   background-image:linear-gradient(rgba(124,131,255,.22) 1px,transparent 1px),linear-gradient(90deg,rgba(124,131,255,.22) 1px,transparent 1px);
   background-size:46px 46px;-webkit-mask:radial-gradient(circle at 50% 50%,#000,transparent 70%);mask:radial-gradient(circle at 50% 50%,#000,transparent 70%);
-  animation:gridIn 1.3s ease both,gridOut .5s 1.35s forwards}
-@keyframes gridIn{0%{opacity:0;transform:scale(1.1)}100%{opacity:.25;transform:scale(1)}}
+  animation:gridIn 1.6s ease both,gridOut .5s 1.9s forwards}
+@keyframes gridIn{0%{opacity:0;transform:scale(1.12)}100%{opacity:.22;transform:scale(1)}}
 @keyframes gridOut{to{opacity:0}}
 
-.ldr-core{position:relative;width:170px;height:170px;display:grid;place-items:center}
-.ldr-logo{width:86px;height:86px;border-radius:22px;position:relative;z-index:2;
-  filter:drop-shadow(0 0 26px rgba(124,131,255,.7));
-  animation:logoIn .8s cubic-bezier(.2,.9,.3,1.25) both,logoOut .45s 1.42s forwards}
-@keyframes logoIn{0%{opacity:0;transform:scale(.35) rotate(-12deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
-@keyframes logoOut{0%{transform:scale(1);opacity:1}100%{transform:scale(1.9);opacity:0}}
-.ldr-ring{position:absolute;width:150px;height:150px;border-radius:50%;
-  background:conic-gradient(from 0deg,transparent 0%,rgba(34,211,238,.95) 65%,transparent 78%);
-  -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#000 calc(100% - 3px));
-  mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#000 calc(100% - 3px));
-  animation:spin 1s linear infinite,ringfade .4s 1.35s forwards}
-.ldr-ring2{width:118px;height:118px;background:conic-gradient(from 180deg,transparent 0%,rgba(124,131,255,.95) 60%,transparent 75%);
-  animation:spinr 1.4s linear infinite,ringfade .4s 1.35s forwards}
-@keyframes spinr{to{transform:rotate(-360deg)}}
-@keyframes ringfade{to{opacity:0}}
+.ldr-core{position:relative;width:190px;height:190px;display:grid;place-items:center;transform-style:preserve-3d}
+.ldr-gyro{position:absolute;inset:0;margin:auto;width:190px;height:190px;transform-style:preserve-3d;
+  animation:gyroBlast .55s 1.95s forwards}
+@keyframes gyroBlast{0%{transform:scale(1);opacity:1}100%{transform:scale(2.6) rotateZ(35deg);opacity:0}}
+.gyro-ring{position:absolute;inset:0;margin:auto;border-radius:50%;border:2px solid transparent;box-shadow:0 0 18px rgba(124,131,255,.25)}
+.gr1{width:178px;height:178px;border-top-color:#22d3ee;border-bottom-color:#22d3ee;animation:gx 1.9s linear infinite}
+.gr2{width:138px;height:138px;border-left-color:#7c83ff;border-right-color:#7c83ff;animation:gy 1.5s linear infinite}
+.gr3{width:100px;height:100px;border-top-color:#2dd4bf;border-left-color:#2dd4bf;animation:gz 1.15s linear infinite}
+@keyframes gx{to{transform:rotateX(360deg)}}
+@keyframes gy{to{transform:rotateY(360deg)}}
+@keyframes gz{to{transform:rotateZ(360deg)}}
+
+.ldr-logo{width:82px;height:82px;border-radius:22px;position:relative;z-index:2;transform:translateZ(40px);
+  filter:drop-shadow(0 0 28px rgba(124,131,255,.75));
+  animation:logoIn .9s cubic-bezier(.2,.9,.3,1.25) both,logoFloat 3s ease-in-out 1s infinite,logoOut .5s 1.95s forwards}
+@keyframes logoIn{0%{opacity:0;transform:translateZ(40px) scale(.3) rotate(-14deg)}100%{opacity:1;transform:translateZ(40px) scale(1) rotate(0)}}
+@keyframes logoFloat{0%,100%{filter:drop-shadow(0 0 22px rgba(124,131,255,.6))}50%{filter:drop-shadow(0 0 38px rgba(34,211,238,.85))}}
+@keyframes logoOut{0%{opacity:1;transform:translateZ(40px) scale(1)}100%{opacity:0;transform:translateZ(120px) scale(2)}}
+
 .ldr-flash{position:absolute;width:60px;height:60px;border-radius:50%;
   background:radial-gradient(circle,#fff 0%,rgba(124,131,255,.55) 35%,transparent 70%);opacity:0;
-  animation:flash .65s ease-out 1.4s forwards}
-@keyframes flash{0%{opacity:0;transform:scale(.4)}28%{opacity:.95}100%{opacity:0;transform:scale(16)}}
+  animation:flash .7s ease-out 1.95s forwards}
+@keyframes flash{0%{opacity:0;transform:scale(.4)}28%{opacity:.95}100%{opacity:0;transform:scale(18)}}
 
 .ldr-shock{position:absolute;width:44px;height:44px;border-radius:50%;border:2px solid rgba(124,131,255,.75);opacity:0;
-  animation:shock 1.1s cubic-bezier(.2,.7,.2,1) 1.4s forwards}
-.ldr-shock2{border-color:rgba(34,211,238,.6);animation-delay:1.52s}
-@keyframes shock{0%{opacity:.9;transform:scale(0)}100%{opacity:0;transform:scale(64)}}
+  animation:shock 1.15s cubic-bezier(.2,.7,.2,1) 1.95s forwards}
+.ldr-shock2{border-color:rgba(34,211,238,.6);animation-delay:2.08s}
+@keyframes shock{0%{opacity:.9;transform:scale(0)}100%{opacity:0;transform:scale(70)}}
 
 .ldr-particles{position:absolute;inset:0;pointer-events:none}
 .ldr-particles i{position:absolute;left:50%;top:50%;width:7px;height:7px;border-radius:50%;opacity:0;
-  box-shadow:0 0 10px currentColor;animation:burst 1s cubic-bezier(.15,.7,.2,1) 1.4s forwards}
+  box-shadow:0 0 10px currentColor;animation:burst 1s cubic-bezier(.15,.7,.2,1) 1.95s forwards}
 @keyframes burst{0%{opacity:0;transform:translate(-50%,-50%) scale(.3)}18%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--x)),calc(-50% + var(--y))) scale(1)}}
 
-.ldr-label{position:absolute;bottom:17%;left:0;right:0;text-align:center;font-family:var(--mono);
-  font-size:.72rem;letter-spacing:.42em;text-indent:.42em;color:#9aa7ff;
-  animation:lblPulse 1.1s ease-in-out infinite,lblOut .4s 1.32s forwards}
-@keyframes lblPulse{0%,100%{opacity:.45}50%{opacity:1}}
-@keyframes lblOut{to{opacity:0;transform:translateY(6px)}}
+.ldr-pct{position:absolute;top:calc(50% + 120px);left:0;right:0;text-align:center;font-family:var(--mono);
+  font-size:1.9rem;font-weight:700;color:#fff;letter-spacing:.02em;text-shadow:0 0 18px rgba(34,211,238,.5);
+  animation:lblOut .4s 1.9s forwards}
+.ldr-pct::after{content:"%";font-size:.9rem;opacity:.65;margin-left:3px;vertical-align:super}
+.ldr-label{position:absolute;bottom:15%;left:0;right:0;text-align:center;font-family:var(--mono);
+  font-size:.7rem;letter-spacing:.42em;text-indent:.42em;color:#9aa7ff;
+  animation:lblPulse 1.1s ease-in-out infinite,lblOut .4s 1.9s forwards}
+@keyframes lblPulse{0%,100%{opacity:.4}50%{opacity:1}}
+@keyframes lblOut{to{opacity:0;transform:translateY(8px)}}
 
 @media (prefers-reduced-motion:reduce){.loader{display:none!important}}
 
