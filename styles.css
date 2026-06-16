@@ -339,6 +339,7 @@ section{position:relative;z-index:2}
   .section-head p{font-size:.98rem}
   .cta-inner{padding:36px 22px}
   .owner-grid{grid-template-columns:1fr}
+  .step,.feature-card,.mf-card,.og-card{padding:24px 22px}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
