@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ThinkPulse: AI OCR & Smart Chatbot for Chrome</title>
+  <meta name="description" content="ThinkPulse is an AI-powered Chrome extension: instant OCR selection, a smart multi-model chatbot side panel, exam mode, and multi-API failover so you never get stuck." />
+  <meta name="theme-color" content="#eef2ff" />
+  <meta property="og:title" content="ThinkPulse: AI OCR & Smart Chatbot" />
+  <meta property="og:description" content="Read anything on screen, chat with the best AI models, never hit a dead end. Multi-API failover built in." />
+  <meta property="og:type" content="website" />
+  <link rel="icon" type="image/png" href="assets/icon128.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Full-screen launch loader -->
+  <div id="loader" class="loader" role="status" aria-label="Loading ThinkPulse">
+    <div class="ldr-grid" aria-hidden="true"></div>
+    <div class="ldr-core">
+      <span class="ldr-ring"></span>
+      <span class="ldr-ring ldr-ring2"></span>
+      <img src="assets/logo.png" class="ldr-logo" alt="" />
+      <span class="ldr-flash" aria-hidden="true"></span>
+    </div>
+    <div class="ldr-shock" aria-hidden="true"></div>
+    <div class="ldr-shock ldr-shock2" aria-hidden="true"></div>
+    <div class="ldr-particles" id="ldrParticles" aria-hidden="true"></div>
+    <div class="ldr-label">INITIALIZING&nbsp;THINKPULSE</div>
+  </div>
+
+  <!-- 3D background canvas -->
+  <canvas id="bgCanvas" aria-hidden="true"></canvas>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="aurora" aria-hidden="true"><span></span><span></span><span></span></div>
+
+  <!-- Scroll progress -->
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
+  <!-- Nav -->
+  <header class="nav" id="nav">
+    <a class="brand" href="#top">
+      <img src="assets/logo.png" alt="ThinkPulse logo" />
+      <span>Think<b>Pulse</b></span>
+    </a>
+    <nav class="nav-links" id="navLinks">
+      <a href="#features">Features</a>
+      <a href="#how">How it works</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#models">Models</a>
+      <a href="#showcase">Showcase</a>
+      <a href="#owner">Developer</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <div class="nav-cta">
+      <button class="icon-btn" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">
+        <svg viewBox="0 0 24 24" class="i-moon"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+        <svg viewBox="0 0 24 24" class="i-sun"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19"/></svg>
+      </button>
+      <a class="btn btn-primary" href="https://chromewebstore.google.com/detail/ibihaggfcclnmenaiboffbmdngbojcpp" target="_blank" rel="noopener" data-magnetic>
+        <svg viewBox="0 0 24 24" class="chrome-i"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><path d="M12 8h8.5M8 14 3.8 6.8M16 14l-4.2 7.3"/></svg>
+        Add to Chrome
+      </a>
+    </div>
+    <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </header>
+
+  <main id="top">
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-inner">
+        <div class="hero-copy reveal">
+          <div class="pill">
+            <span class="dot"></span> Live on the Chrome Web Store · v1.0.1
+          </div>
+          <h1 class="hero-title">
+            Read anything. <span class="grad">Ask everything.</span><br />
+            Never hit a <span class="under">dead end.</span>
+          </h1>
+          <p class="hero-sub">
+            ThinkPulse is an AI co-pilot that lives in your browser. Grab text from <b>any</b> image with one shortcut,
+            chat with the best AI models in a sleek side panel, and keep going thanks to built-in
+            <b>multi-API failover</b>. When one model is busy, the next takes over. Instantly.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary btn-lg" href="https://chromewebstore.google.com/detail/ibihaggfcclnmenaiboffbmdngbojcpp" target="_blank" rel="noopener" data-magnetic>
+              <svg viewBox="0 0 24 24" class="chrome-i"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><path d="M12 8h8.5M8 14 3.8 6.8M16 14l-4.2 7.3"/></svg>
+              Add to Chrome
+            </a>
+            <a class="btn btn-ghost btn-lg" href="#showcase" data-magnetic>Watch it work</a>
+          </div>
+          <div class="hero-stats">
+            <div><b data-count="6">0</b><span>AI models on tap</span></div>
+            <div><b data-count="3">0</b><span>One-key shortcuts</span></div>
+            <div><b data-count="100">0</b><span class="suffix">%</span><span>On-device privacy first</span></div>
+          </div>
+        </div>
+
+        <div class="hero-visual reveal" data-delay="120">
+          <div class="orb-stage" id="orbWrap">
+            <span class="orb-glow" aria-hidden="true"></span>
+            <div class="float-badge fb1"><span class="fb-dot"></span> Instant OCR</div>
+            <div class="float-badge fb2"><span class="fb-dot"></span> 6 AI models on tap</div>
+            <div class="float-badge fb3"><span class="fb-dot"></span> Auto-failover ready</div>
+          </div>
+        </div>
+      </div>
+      <div class="marquee" aria-hidden="true">
+        <div class="marquee-track">
+          <span>OCR Selection</span><span>•</span><span>Smart Chatbot</span><span>•</span><span>Multi-API Failover</span><span>•</span><span>Exam Mode</span><span>•</span><span>Side Panel</span><span>•</span><span>Web Search</span><span>•</span><span>Image Understanding</span><span>•</span>
+          <span>OCR Selection</span><span>•</span><span>Smart Chatbot</span><span>•</span><span>Multi-API Failover</span><span>•</span><span>Exam Mode</span><span>•</span><span>Side Panel</span><span>•</span><span>Web Search</span><span>•</span><span>Image Understanding</span><span>•</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="section" id="features">
+      <div class="section-head reveal">
+        <span class="kicker">Everything packed in</span>
+        <h2>One extension. <span class="grad">A whole AI toolkit.</span></h2>
+        <p>Built for students, researchers, and professionals who move fast. Every detail is tuned for speed, accuracy, and zero friction.</p>
+      </div>
+      <div class="feature-grid">
+        <article class="feature-card big tilt" data-tilt data-reveal>
+          <div class="fc-ic"><svg viewBox="0 0 24 24" class="fc-svg"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 9h10"/><path d="M7 13h6"/></svg></div>
+          <h3>Instant OCR selection</h3>
+          <p>Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>, drag a box over <em>anything</em> on screen (a scanned PDF, a locked image, a video frame) and ThinkPulse pulls clean, copyable text in a blink. Right-click any image to OCR it too.</p>
+          <div class="fc-tag">Keyboard · Context menu · Any site</div>
+        </article>
+        <article class="feature-card tilt" data-tilt data-reveal>
+          <div class="fc-ic"><svg viewBox="0 0 24 24" class="fc-svg"><path d="M21 15a2 2 0 0 1-2 2H8l-4 4V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2z"/><path d="M8 9h8"/><path d="M8 13h5"/></svg></div>
+          <h3>Smart side-panel chat</h3>
+          <p>A focused AI chat that docks beside any page with <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd>. Streamed answers, code blocks, and full context of what you're reading.</p>
+        </article>
+        <article class="feature-card tilt" data-tilt data-reveal>
+          <div class="fc-ic"><svg viewBox="0 0 24 24" class="fc-svg"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg></div>
+          <h3>Multi-API failover</h3>
+          <p>The headline trick. If a model is rate-limited or down, ThinkPulse silently switches to the next provider, so your answer always arrives.</p>
+        </article>
+        <article class="feature-card tilt" data-tilt data-reveal>
+          <div class="fc-ic"><svg viewBox="0 0 24 24" class="fc-svg"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1"/><path d="M8.5 12.5l2 2 4-4"/></svg></div>
+          <h3>Exam mode consensus</h3>
+          <p>Runs several models at once and cross-checks their answers for accuracy when correctness matters most.</p>
+        </article>
+        <article class="feature-card tilt" data-tilt data-reveal>
+          <div class="fc-ic"><svg viewBox="0 0 24 24" class="fc-svg"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.6 2.4 4 5.6 4 9s-1.4 6.6-4 9c-2.6-2.4-4-5.6-4-9s1.4-6.6 4-9z"/></svg></div>
+          <h3>Live web search</h3>
+          <p>Pulls fresh context from the web so answers stay current, not stuck in a training cut-off.</p>
+        </article>
+        <article class="feature-card tilt" data-tilt data-reveal>
+          <div class="fc-ic"><svg viewBox="0 0 24 24" class="fc-svg"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.6"/><path d="M21 15l-5-5L5 21"/></svg></div>
+          <h3>Image understanding</h3>
+          <p>Drop in a screenshot or photo and ask about it: charts, diagrams, handwriting, equations.</p>
+        </article>
+        <article class="feature-card tilt" data-tilt data-reveal>
+          <div class="fc-ic"><svg viewBox="0 0 24 24" class="fc-svg"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></div>
+          <h3>New chat in one key</h3>
+          <p>Hit <kbd>Alt</kbd>+<kbd>C</kbd> for a fresh thread anywhere. Your flow never breaks.</p>
+        </article>
+        <article class="feature-card tilt" data-tilt data-reveal>
+          <div class="fc-ic"><svg viewBox="0 0 24 24" class="fc-svg"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.4 1.4M17.6 17.6 19 19M19 5l-1.4 1.4M6.4 17.6 5 19"/></svg></div>
+          <h3>Light and dark, by design</h3>
+          <p>A glassy, premium UI that adapts to your system, easy on the eyes day or night.</p>
+        </article>
+        <article class="feature-card tilt" data-tilt data-reveal>
+          <div class="fc-ic"><svg viewBox="0 0 24 24" class="fc-svg"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><path d="M12 14.5v2.5"/></svg></div>
+          <h3>Private by default</h3>
+          <p>Secure Google sign-in, sensible permissions, and no selling of your data. Your work stays yours.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="section alt" id="how">
+      <div class="section-head reveal">
+        <span class="kicker">Three steps</span>
+        <h2>From <span class="grad">"I'm stuck"</span> to "done" in seconds</h2>
+      </div>
+      <div class="steps">
+        <div class="step tilt" data-tilt data-reveal>
+          <span class="step-n">01</span>
+          <h3>Pin it & sign in</h3>
+          <p>Add ThinkPulse to Chrome, pin it to your toolbar, and sign in securely with Google. You're set up in under a minute.</p>
+        </div>
+        <div class="step tilt" data-tilt data-reveal>
+          <span class="step-n">02</span>
+          <h3>Capture or ask</h3>
+          <p>Drag-select text with OCR, or open the side panel and ask. Bring in images, code, or whole pages as context.</p>
+        </div>
+        <div class="step tilt" data-tilt data-reveal>
+          <span class="step-n">03</span>
+          <h3>Get the answer, always</h3>
+          <p>Models stream in real time, and failover keeps things moving even under heavy load. No spinners of doom.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Architecture -->
+    <section class="section" id="architecture">
+      <div class="section-head reveal">
+        <span class="kicker">Under the hood</span>
+        <h2>How a request <span class="grad">travels</span></h2>
+        <p>From a keystroke to a streamed answer, every hop is built for speed and resilience.</p>
+      </div>
+
+      <div class="arch" data-reveal>
+        <div class="arch-rail">
+          <div class="arch-node" style="--d:0">
+            <div class="arch-ic"><svg viewBox="0 0 24 24" class="fc-svg"><path d="M5 3l6 16 2.2-6.2L19.5 10z"/></svg></div>
+            <h4>You</h4>
+            <span>Select text or ask in the side panel</span>
+          </div>
+          <div class="arch-conn"></div>
+          <div class="arch-node" style="--d:1">
+            <div class="arch-ic"><svg viewBox="0 0 24 24" class="fc-svg"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg></div>
+            <h4>Extension</h4>
+            <span>OCR capture and secure Google sign-in</span>
+          </div>
+          <div class="arch-conn"></div>
+          <div class="arch-node" style="--d:2">
+            <div class="arch-ic"><svg viewBox="0 0 24 24" class="fc-svg"><rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01"/></svg></div>
+            <h4>Secure backend</h4>
+            <span>Validates the request and routes it</span>
+          </div>
+          <div class="arch-conn"></div>
+          <div class="arch-node arch-node-key" style="--d:3">
+            <div class="arch-ic"><svg viewBox="0 0 24 24" class="fc-svg"><path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="M4 4l5 5"/><path d="M15 15l6 6"/></svg></div>
+            <h4>Failover engine</h4>
+            <span>Picks the best model, retries on failure</span>
+          </div>
+        </div>
+
+        <div class="arch-bus" aria-hidden="true"><span class="arch-bus-label">Routed to the best available model</span></div>
+
+        <div class="arch-providers">
+          <div class="arch-prov" style="--d:0"><span class="ap-dot"></span>DeepSeek</div>
+          <div class="arch-prov" style="--d:1"><span class="ap-dot"></span>NVIDIA</div>
+          <div class="arch-prov" style="--d:2"><span class="ap-dot"></span>Gemini</div>
+          <div class="arch-prov" style="--d:3"><span class="ap-dot"></span>OpenRouter</div>
+          <div class="arch-prov" style="--d:4"><span class="ap-dot"></span>Vision OCR</div>
+          <div class="arch-prov" style="--d:5"><span class="ap-dot"></span>Web Search</div>
+        </div>
+
+        <div class="arch-return" aria-hidden="true">
+          <span class="arch-return-label">Answer streams back to you, every time</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Models -->
+    <section class="section" id="models">
+      <div class="section-head reveal">
+        <span class="kicker">Best model, every time</span>
+        <h2>Many minds, <span class="grad">one panel</span></h2>
+        <p>ThinkPulse routes your request across leading AI providers and falls back automatically. You get the strongest available answer without lifting a finger.</p>
+      </div>
+      <div class="models-hub" data-reveal>
+        <div class="hub-stage">
+          <span class="hub-orbit hub-orbit-a"></span>
+          <span class="hub-orbit hub-orbit-b"></span>
+          <div class="hub-core">
+            <img src="assets/logo.png" alt="ThinkPulse" />
+            <span class="hub-core-label">ThinkPulse</span>
+            <span class="hub-pulse"></span>
+            <span class="hub-pulse hub-pulse-2"></span>
+          </div>
+          <div class="hub-node" style="--a:-90deg"><span class="hn-dot"></span>DeepSeek</div>
+          <div class="hub-node" style="--a:-30deg"><span class="hn-dot"></span>NVIDIA</div>
+          <div class="hub-node" style="--a:30deg"><span class="hn-dot"></span>Gemini</div>
+          <div class="hub-node" style="--a:90deg"><span class="hn-dot"></span>OpenRouter</div>
+          <div class="hub-node" style="--a:150deg"><span class="hn-dot"></span>Vision OCR</div>
+          <div class="hub-node" style="--a:210deg"><span class="hn-dot"></span>Web Search</div>
+        </div>
+      </div>
+      <div class="models-flow" data-reveal>
+        <div class="mf-card">
+          <span class="mf-step">01</span>
+          <h4>Smart routing</h4>
+          <p>Your request is sent to the best-suited model for the job: vision, reasoning, or fast chat.</p>
+        </div>
+        <div class="mf-arrow" aria-hidden="true">→</div>
+        <div class="mf-card">
+          <span class="mf-step">02</span>
+          <h4>Silent failover</h4>
+          <p>If a provider is rate-limited or down, ThinkPulse instantly retries on the next one. You never see an error.</p>
+        </div>
+        <div class="mf-arrow" aria-hidden="true">→</div>
+        <div class="mf-card">
+          <span class="mf-step">03</span>
+          <h4>Best answer wins</h4>
+          <p>The strongest available response streams back to you, every time.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Showcase -->
+    <section class="section alt" id="showcase">
+      <div class="section-head reveal">
+        <span class="kicker">See it move</span>
+        <h2>A side panel that <span class="grad">feels alive</span></h2>
+      </div>
+      <div class="showcase">
+        <div class="show-window tilt" data-tilt data-reveal>
+          <div class="sw-bar"><i></i><i></i><i></i><span>thinkpulse · side panel</span></div>
+          <div class="sw-body">
+            <div class="sw-row sw-user">Extract the key clauses from this contract image.</div>
+            <div class="sw-row sw-ai">
+              <strong>ThinkPulse</strong>
+              <p>I scanned the image and found <b>3 key clauses</b>:</p>
+              <ol><li>Term: 24 months, auto-renew.</li><li>Liability cap: fees paid in prior 12 months.</li><li>Termination: 30-day written notice.</li></ol>
+              <p class="muted">Source model: DeepSeek · failover armed</p>
+            </div>
+          </div>
+        </div>
+        <ul class="show-points" data-reveal>
+          <li><b>Real-time streaming</b>: answers appear token by token.</li>
+          <li><b>Context-aware</b>: it understands the page and image you're on.</li>
+          <li><b>Resilient</b>: a busy model never becomes your problem.</li>
+          <li><b>Keyboard-first</b>: drive everything without touching the mouse.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Digital Knowledge River -->
+    <section class="section" id="river">
+      <div class="section-head reveal">
+        <span class="kicker">The big picture</span>
+        <h2>The <span class="grad">Digital Knowledge River</span></h2>
+        <p>A visual metaphor for what ThinkPulse actually does: it takes the messy stream of everything on your screen and carries it into one clear current of usable knowledge.</p>
+      </div>
+
+      <div class="river" data-reveal>
+        <canvas class="river-canvas" id="riverCanvas" aria-hidden="true"></canvas>
+        <div class="river-labels" id="riverLabels" aria-hidden="true"></div>
+        <div class="river-cursor" id="riverCursor" aria-hidden="true"></div>
+        <div class="river-core"><img src="assets/logo.png" alt="" /><span>ThinkPulse</span></div>
+        <div class="river-banks">
+          <div class="rb rb-up"><b>Upstream</b><span>Raw inputs: screenshots, PDFs, web pages, code, exam questions</span></div>
+          <div class="rb rb-down"><b>Downstream</b><span>Clean knowledge: extracted text, answers, summaries</span></div>
+        </div>
+        <span class="river-hint">Drag to stir the current. Tap a word to dissolve it.</span>
+      </div>
+    </section>
+
+    <!-- Owner / Developer -->
+    <section class="section" id="owner">
+      <div class="section-head reveal">
+        <span class="kicker">The mind behind it</span>
+        <h2>Meet the <span class="grad">developer</span></h2>
+      </div>
+      <div class="owner">
+        <div class="owner-card tilt" data-tilt data-reveal>
+          <div class="owner-photo">
+            <img src="assets/developer image.jpg" alt="Saifullah Faizan" />
+            <span class="owner-status">● Available for work</span>
+          </div>
+          <h3>Saifullah Faizan</h3>
+          <p class="owner-role">Full-Stack Developer &amp; AI Engineer</p>
+          <p class="owner-loc">📍 Kolkata, West Bengal, India</p>
+          <div class="owner-links">
+            <a href="https://saifullah-faizan.netlify.app/" target="_blank" rel="noopener">Portfolio</a>
+            <a href="https://github.com/Faizan-8792" target="_blank" rel="noopener">GitHub</a>
+            <a href="https://www.linkedin.com/in/saifullah-faizan-0500052bb/" target="_blank" rel="noopener">LinkedIn</a>
+          </div>
+        </div>
+        <div class="owner-body" data-reveal>
+          <p class="owner-bio">
+            I build scalable web apps, AI-powered products, browser extensions, and cloud-deployed SaaS platforms.
+            Currently in the <b>AI &amp; Robotics Department at Narayana Group</b>, working on predictive analytics,
+            business intelligence, and AI-driven insights. ThinkPulse is my take on what an in-browser AI co-pilot
+            should feel like: fast, resilient, and genuinely useful.
+          </p>
+          <div class="owner-grid">
+            <div class="og-card">
+              <h4>Experience</h4>
+              <ul>
+                <li><b>Narayana Group</b> - AI &amp; Robotics · 2025-Present</li>
+                <li><b>FICCS</b> - Freelance Full-Stack Developer · 2026</li>
+                <li><b>OutBro</b> - Freelance Web Developer · 2024-25</li>
+              </ul>
+            </div>
+            <div class="og-card">
+              <h4>Highlights</h4>
+              <ul>
+                <li>FamilyGuard acquired by Quandoo (Germany)</li>
+                <li>CA PRO Toolkit adopted by 20 CA firms in Kolkata</li>
+                <li>3× hackathon winner · multiple shipped SaaS products</li>
+              </ul>
+            </div>
+            <div class="og-card">
+              <h4>Education</h4>
+              <ul>
+                <li>BCA - NSHM Knowledge Campus, Kolkata (2026)</li>
+                <li>AI, ML &amp; Data Science - IIT Roorkee</li>
+              </ul>
+            </div>
+            <div class="og-card">
+              <h4>Toolbox</h4>
+              <div class="skill-tags">
+                <span>React</span><span>Node.js</span><span>TypeScript</span><span>Python</span><span>Flask</span><span>PostgreSQL</span><span>MongoDB</span><span>Docker</span><span>AWS</span><span>LLM Integration</span><span>OCR / NLP</span><span>Chrome Extensions</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-band reveal">
+      <div class="cta-inner">
+        <h2>Stop fighting your tools. <span class="grad">Start thinking faster.</span></h2>
+        <p>Add ThinkPulse to Chrome and turn every tab into an AI workspace.</p>
+        <a class="btn btn-primary btn-lg" href="https://chromewebstore.google.com/detail/ibihaggfcclnmenaiboffbmdngbojcpp" target="_blank" rel="noopener" data-magnetic>
+          <svg viewBox="0 0 24 24" class="chrome-i"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><path d="M12 8h8.5M8 14 3.8 6.8M16 14l-4.2 7.3"/></svg>
+          Add to Chrome
+        </a>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section alt" id="faq">
+      <div class="section-head reveal">
+        <span class="kicker">Good to know</span>
+        <h2>Frequently <span class="grad">asked</span></h2>
+      </div>
+      <div class="faq" data-reveal>
+        <details><summary>What exactly does ThinkPulse do?<i></i></summary><p>It's a Chrome extension with three core powers: OCR text capture from any image on screen, a smart AI chatbot in a side panel, and automatic failover across multiple AI models so you always get an answer.</p></details>
+        <details><summary>What is multi-API failover?<i></i></summary><p>ThinkPulse can talk to several AI providers. If one is rate-limited, slow, or down, it automatically routes your request to the next available model, invisibly, so you never see an error.</p></details>
+        <details><summary>How do I capture text from an image?<i></i></summary><p>Press <b>Ctrl + Shift + X</b> and drag a box over the area, or right-click an image and choose the OCR option. Clean text is returned instantly.</p></details>
+        <details><summary>Is my data safe?<i></i></summary><p>Yes. Sign-in is handled securely via Google, permissions are scoped to what's needed, and your conversations and content are never sold.</p></details>
+        <details><summary>What is exam mode?<i></i></summary><p>For high-stakes accuracy, exam mode runs multiple models and compares their answers to surface the most reliable response.</p></details>
+        <details><summary>How much does it cost?<i></i></summary><p>ThinkPulse is free to add to Chrome. For any billing or usage questions, reach us at support@thinkpulseai.in.</p></details>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a class="brand" href="#top"><img src="assets/logo.png" alt="ThinkPulse" /><span>Think<b>Pulse</b></span></a>
+        <p>AI-powered OCR selection and a smart chatbot with multi-API failover, right inside your browser.</p>
+        <a class="btn btn-primary" href="https://chromewebstore.google.com/detail/ibihaggfcclnmenaiboffbmdngbojcpp" target="_blank" rel="noopener" data-magnetic>Add to Chrome</a>
+      </div>
+      <div class="foot-col">
+        <h5>Product</h5>
+        <a href="#features">Features</a>
+        <a href="#how">How it works</a>
+        <a href="#models">Models</a>
+        <a href="#showcase">Showcase</a>
+      </div>
+      <div class="foot-col">
+        <h5>Contact</h5>
+        <a href="mailto:support@thinkpulseai.in">support@thinkpulseai.in</a>
+        <a href="mailto:owner@thinkpulseai.in">owner@thinkpulseai.in</a>
+      </div>
+      <div class="foot-col">
+        <h5>Developer</h5>
+        <a href="https://saifullah-faizan.netlify.app/" target="_blank" rel="noopener">Portfolio</a>
+        <a href="https://github.com/Faizan-8792" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://www.linkedin.com/in/saifullah-faizan-0500052bb/" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© <span id="year"></span> ThinkPulse. Crafted by Saifullah Faizan.</span>
+      <span class="foot-made">Made with precision, not templates.</span>
+    </div>
+  </footer>
+
+  <script type="module" src="scene.js"></script>
+  <script type="module" src="river.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+# Personal document, not part of the website
+saifullah_faizan_cv.pdf
+
+# Local tooling / temp
+_serve.cjs
+.playwright-mcp/
+*.log
+.DS_Store
+Thumbs.db
+node_modules/
