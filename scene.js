@@ -178,18 +178,19 @@ import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
       ring.rotation.z = time * 0.06;
     }
 
-    // graceful scroll dock: shrink modestly, drift to corner, dim glow (never vanish)
+    // scroll fade: the planet belongs to the hero only - fade it right out so
+    // it never washes out the sections below.
     var vh = window.innerHeight;
-    var p = Math.min(scrollY / (vh * 1.0), 1);
+    var p = Math.min(scrollY / (vh * 0.8), 1);
     var ease = p * p * (3 - 2 * p); // smoothstep
-    var s = 1 - ease * 0.22;
-    group.scale.setScalar(s);
+    group.scale.setScalar(1 - ease * 0.45);
     var c = theme();
-    planetMat.uniforms.uOpacity.value = c.planetOp - ease * 0.30;
-    atmoMat.uniforms.uGlow.value = c.atmoGlow * (1 - ease * 0.55);
-    ringMat.opacity = c.ringOp * (1 - ease * 0.7);
-    group.position.y = ease * 0.45;
-    group.position.x = (window.innerWidth > 900 ? 1.7 : 0) + ease * 0.35;
+    planetMat.uniforms.uOpacity.value = c.planetOp * (1 - ease * 0.94);
+    atmoMat.uniforms.uGlow.value = c.atmoGlow * (1 - ease);
+    ringMat.opacity = c.ringOp * (1 - ease);
+    group.position.y = ease * 1.1;
+    group.position.x = (window.innerWidth > 900 ? 1.7 : 0) + ease * 0.3;
+    group.visible = ease < 0.985;
 
     camera.position.x = cx * 0.22;
     camera.position.y = -cy * 0.16;

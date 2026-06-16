@@ -164,13 +164,27 @@
     window.dispatchEvent(new CustomEvent('tp-theme', { detail: cur }));
   });
 
-  /* ---------- Burger ---------- */
+  /* ---------- Burger / mobile menu ---------- */
   var burger = document.getElementById('burger');
   var links = document.getElementById('navLinks');
   if (burger && links) {
-    burger.addEventListener('click', function () { links.classList.toggle('open'); });
+    function setMenu(open) {
+      links.classList.toggle('open', open);
+      burger.classList.toggle('open', open);
+      burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+    burger.addEventListener('click', function (e) {
+      e.stopPropagation();
+      setMenu(!links.classList.contains('open'));
+    });
     links.querySelectorAll('a').forEach(function (a) {
-      a.addEventListener('click', function () { links.classList.remove('open'); });
+      a.addEventListener('click', function () { setMenu(false); });
+    });
+    document.addEventListener('click', function (e) {
+      if (links.classList.contains('open') && !links.contains(e.target) && !burger.contains(e.target)) setMenu(false);
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && links.classList.contains('open')) setMenu(false);
     });
   }
 

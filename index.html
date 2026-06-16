@@ -64,7 +64,7 @@
         Add to Chrome
       </a>
     </div>
-    <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+    <button class="burger" id="burger" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
   </header>
 
   <main id="top">
@@ -325,12 +325,6 @@
 
     <!-- Digital Knowledge River -->
     <section class="section" id="river">
-      <div class="section-head reveal">
-        <span class="kicker">The big picture</span>
-        <h2>The <span class="grad">Digital Knowledge River</span></h2>
-        <p>A visual metaphor for what ThinkPulse actually does: it takes the messy stream of everything on your screen and carries it into one clear current of usable knowledge.</p>
-      </div>
-
       <div class="river" data-reveal>
         <canvas class="river-canvas" id="riverCanvas" aria-hidden="true"></canvas>
         <div class="river-labels" id="riverLabels" aria-hidden="true"></div>
@@ -340,6 +334,12 @@
           <div class="rb rb-down"><b>Downstream</b><span>Clean knowledge: extracted text, answers, summaries</span></div>
         </div>
         <span class="river-hint">Drag to stir the current. Tap a word to dissolve it.</span>
+      </div>
+
+      <div class="section-head river-head reveal">
+        <span class="kicker">The big picture</span>
+        <h2>The <span class="grad">Digital Knowledge River</span></h2>
+        <p>A visual metaphor for what ThinkPulse actually does: it takes the messy stream of everything on your screen and carries it into one clear current of usable knowledge.</p>
       </div>
     </section>
 

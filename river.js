@@ -270,18 +270,15 @@ import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
     new IntersectionObserver(function (en) { visible = en[0].isIntersecting; }, { threshold: 0.01 }).observe(host);
   }
 
-  // Touch / no-pointer devices: drive the ripple from scrolling (mouse-in on scroll, mouse-out when idle)
-  var hoverable = window.matchMedia('(hover: hover)').matches;
-  var lastScroll = -9999, prevSY = window.scrollY;
-  if (!hoverable) {
-    window.addEventListener('scroll', function () {
-      lastScroll = performance.now(); prevSY = window.scrollY;
-      var rect = host.getBoundingClientRect();
-      var prog = 1 - (rect.top + rect.height * 0.5) / window.innerHeight;
-      prog = Math.max(0, Math.min(1, prog));
-      waterMat.uniforms.uMouse.value.set((prog - 0.5) * W * 0.7, Math.sin(prog * 6.283) * L * 0.3);
-    }, { passive: true });
-  }
+  // Drive the ripple from scrolling too (works on PC + mobile, in addition to the pointer)
+  var lastScroll = -9999;
+  window.addEventListener('scroll', function () {
+    lastScroll = performance.now();
+    var rect = host.getBoundingClientRect();
+    var prog = 1 - (rect.top + rect.height * 0.5) / window.innerHeight;
+    prog = Math.max(0, Math.min(1, prog));
+    waterMat.uniforms.uMouse.value.set((prog - 0.5) * W * 0.7, Math.sin(prog * 6.283) * L * 0.3);
+  }, { passive: true });
 
   var last = performance.now();
   function frame(now) {
@@ -289,7 +286,7 @@ import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
     if (!visible) { last = now; return; }
     var dt = Math.min((now - last) / 1000, 0.05); last = now;
     if (!reduce) waterMat.uniforms.uTime.value += dt;
-    if (!hoverable) targetMouseOn = (now - lastScroll < 700) ? 1 : 0;
+    if (now - lastScroll < 700) targetMouseOn = 1;
     waterMat.uniforms.uMouseOn.value += (targetMouseOn - waterMat.uniforms.uMouseOn.value) * 0.08;
 
     // flow particles downstream + stir around the cursor
@@ -309,8 +306,8 @@ import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
     pGeo.attributes.position.needsUpdate = true;
     updateLabels(dt);
 
-    // mobile: show the glowing cursor at the scroll-driven ripple point
-    if (!hoverable && cursorEl) {
+    // show the glowing cursor at the scroll-driven ripple point (PC + mobile)
+    if (cursorEl && (now - lastScroll < 700)) {
       var moNow = waterMat.uniforms.uMouseOn.value;
       if (moNow > 0.05) {
         projV.set(waterMat.uniforms.uMouse.value.x, 0.3, waterMat.uniforms.uMouse.value.y).project(camera);
