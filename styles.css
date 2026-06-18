@@ -280,9 +280,10 @@ section{position:relative;z-index:2}
 .pb-kicker{display:inline-block;font-size:.78rem;text-transform:uppercase;letter-spacing:.16em;font-weight:700;color:var(--accent-2);margin-bottom:14px;position:relative}
 .pb-inner h2{font-size:clamp(1.5rem,3.6vw,2.4rem);font-weight:800;letter-spacing:-.02em;position:relative;max-width:760px;margin:0 auto}
 .pb-inner p{color:var(--text-2);margin:16px auto 28px;font-size:1.05rem;max-width:560px;position:relative}
-.pb-mail{display:inline-flex;align-items:center;gap:12px;padding:15px 26px;border-radius:14px;background:var(--grad);color:#fff;font-weight:700;font-size:clamp(1rem,2.4vw,1.2rem);letter-spacing:.01em;position:relative;box-shadow:0 16px 44px var(--glow);transition:transform .2s,box-shadow .2s;word-break:break-all}
+.pb-mail{display:inline-flex;align-items:center;gap:12px;padding:15px 26px;border-radius:14px;background:var(--grad);color:#fff;font-weight:700;font-size:clamp(.92rem,2.4vw,1.2rem);letter-spacing:.01em;position:relative;box-shadow:0 16px 44px var(--glow);transition:transform .2s,box-shadow .2s;white-space:nowrap;max-width:100%}
 .pb-mail:hover{transform:translateY(-3px);box-shadow:0 22px 56px var(--glow)}
 .pb-mail svg{width:24px;height:24px;flex-shrink:0;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+@media (max-width:480px){.pb-mail{font-size:.82rem;padding:13px 16px;gap:8px}.pb-mail svg{width:18px;height:18px}}
 
 /* faq */
 .faq{max-width:780px;margin:0 auto;display:flex;flex-direction:column;gap:12px}

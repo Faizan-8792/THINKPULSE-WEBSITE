@@ -201,7 +201,19 @@ import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
       }
       var y = 0.5 + Math.sin(now * 0.001 + k) * 0.16;
       projV.set(it.x, y, it.z).project(camera);
-      if (projV.z > 1) { it.el.style.opacity = '0'; it.sx = null; continue; }
+      // Hide labels that fall outside the camera frustum. project() divides by
+      // w, so points behind/near the camera plane blow up to huge NDC values
+      // (which placed labels thousands of px off-canvas and made the river look
+      // broken). A small margin past [-1,1] keeps genuine edge labels visible.
+      if (
+        projV.z > 1 || projV.z < -1 ||
+        projV.x < -1.5 || projV.x > 1.5 ||
+        projV.y < -1.5 || projV.y > 1.5
+      ) {
+        it.el.style.opacity = '0';
+        it.sx = null;
+        continue;
+      }
       var sx = (projV.x * 0.5 + 0.5) * Wp;
       var sy = (-projV.y * 0.5 + 0.5) * Hp;
       it.sx = sx; it.sy = sy;
